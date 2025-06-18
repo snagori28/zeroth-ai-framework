@@ -52,6 +52,7 @@ This exposes the endpoints described below.
 | `/ingest`      | Ingest raw text and store extracted facts  |
 | `/ingest-file` | Ingest a text file from `uploads/`         |
 | `/explain`     | Return a step-by-step reasoning trace      |
+| `/clarify`     | Generate clarifying questions for a goal   |
 
 ## Environment variables
 The CLI and API will prompt for any required values that are missing. You may also export them manually:

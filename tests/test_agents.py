@@ -25,6 +25,20 @@ openai_stub.ChatCompletion = _DummyChat
 openai_stub.api_key = None
 sys.modules["openai"] = openai_stub
 
+# minimal spacy stub
+spacy_stub = types.ModuleType("spacy")
+class _DummyDoc:
+    def __init__(self, text=""):
+        self.text = text
+        self.noun_chunks = []
+    def similarity(self, other):
+        return 0.0
+class _DummyNLP:
+    def __call__(self, text):
+        return _DummyDoc(text)
+spacy_stub.load = lambda name: _DummyNLP()
+sys.modules.setdefault("spacy", spacy_stub)
+
 from core.planner_agent import PlannerAgent
 from core.reasoner_agent import ReasonerAgent
 from core.explainer_agent import ExplainerAgent

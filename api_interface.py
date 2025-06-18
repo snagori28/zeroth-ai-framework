@@ -10,6 +10,7 @@ from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
 from core.feedback_agent import FeedbackAgent
+from core.clarifier_agent import ClarifierAgent
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ feedback = FeedbackAgent(llm)
 reasoner = ReasonerAgent(llm_agent=llm)
 explainer = ExplainerAgent(llm_agent=llm)
 ingestor = DocumentIngestor(llm, memory, feedback)
+clarifier = ClarifierAgent(llm_agent=llm)
 
 
 @app.on_event("shutdown")
@@ -115,3 +117,12 @@ def explain(req: TaskRequest):
     steps = [f"Task: {task} -> Result: {fact}" for task, fact in zip(subtasks, known_facts)]
     steps.append(f"Final Inference: {reasoning}")
     return {"explanation": explainer.explain(steps)}
+
+
+@app.post("/clarify")
+def clarify(req: TaskRequest):
+    """Return clarifying questions for the user's goal."""
+
+    logger.info("/clarify called with goal: %s", req.goal)
+    questions = clarifier.clarify(req.goal)
+    return {"questions": questions}

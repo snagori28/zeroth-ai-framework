@@ -10,7 +10,8 @@ setup(
         'openai',
         'fastapi',
         'uvicorn',
-        'pydantic'
+        'pydantic',
+        'httpx'
     ],
     entry_points={
         'console_scripts': [
