@@ -67,8 +67,7 @@ def main():
                 if not os.path.exists(filepath):
                     print("File not found.")
                     continue
-                with open(filepath, 'r', encoding='utf-8') as file:
-                    document_content = file.read()
+                ingestor.ingest(filepath)
             else:
                 print("Paste your document content below. Type 'END' on a new line to finish:")
                 lines = []
@@ -77,9 +76,9 @@ def main():
                     if line.strip().upper() == 'END':
                         break
                     lines.append(line)
-                document_content = "\n".join(lines)
+                content = "\n".join(lines)
+                ingestor.ingest(content)
 
-            ingestor.ingest(document_content)
             print("Document processed and facts stored.")
 
         elif choice == '4':
