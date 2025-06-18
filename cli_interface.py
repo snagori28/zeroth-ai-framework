@@ -1,3 +1,4 @@
+import os
 from core.planner_agent import PlannerAgent
 from core.memory_agent import MemoryAgent
 from core.reasoner_agent import ReasonerAgent
@@ -55,14 +56,29 @@ def main():
             print("Fact stored successfully.")
 
         elif choice == '3':
-            print("Paste your document content below. Type 'END' on a new line to finish:")
-            lines = []
-            while True:
-                line = input()
-                if line.strip().upper() == 'END':
-                    break
-                lines.append(line)
-            document_content = "\n".join(lines)
+            print("Choose document ingestion method:")
+            print("1. Paste manually")
+            print("2. Upload from file (in ./uploads)")
+            doc_option = input("Select (1 or 2): ").strip()
+
+            if doc_option == '2':
+                filename = input("Enter filename (from ./uploads): ").strip()
+                filepath = os.path.join("uploads", filename)
+                if not os.path.exists(filepath):
+                    print("File not found.")
+                    continue
+                with open(filepath, 'r', encoding='utf-8') as file:
+                    document_content = file.read()
+            else:
+                print("Paste your document content below. Type 'END' on a new line to finish:")
+                lines = []
+                while True:
+                    line = input()
+                    if line.strip().upper() == 'END':
+                        break
+                    lines.append(line)
+                document_content = "\n".join(lines)
+
             ingestor.ingest(document_content)
             print("Document processed and facts stored.")
 
@@ -84,3 +100,6 @@ def main():
 
         else:
             print("Invalid option. Try again.")
+
+if __name__ == '__main__':
+    main()
