@@ -5,6 +5,7 @@ from core.reasoner_agent import ReasonerAgent
 from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
+from config import Config
 
 def main():
     """Launch the interactive command line interface."""
@@ -63,12 +64,12 @@ def main():
             elif choice == '3':
             print("Choose document ingestion method:")
             print("1. Paste manually")
-            print("2. Upload from file (in ./uploads)")
+            print(f"2. Upload from file (in {Config.UPLOAD_DIR})")
             doc_option = input("Select (1 or 2): ").strip()
 
             if doc_option == '2':
-                filename = input("Enter filename (from ./uploads): ").strip()
-                filepath = os.path.join("uploads", filename)
+                filename = input(f"Enter filename (from {Config.UPLOAD_DIR}): ").strip()
+                filepath = os.path.join(Config.UPLOAD_DIR, filename)
                 if not os.path.exists(filepath):
                     print("File not found.")
                     continue
