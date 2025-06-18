@@ -30,13 +30,14 @@ def main():
         while True:
             print("\n=== Zeroth CLI ===")
             print("1. Plan & Reason a Goal")
-            print("2. Learn a Fact Manually")
-            print("3. Ingest a Document")
-            print("4. Query Memory")
-            print("5. Explain Last Output")
-            print("6. Exit")
+            print("2. Clarify a Goal")
+            print("3. Learn a Fact Manually")
+            print("4. Ingest a Document")
+            print("5. Query Memory")
+            print("6. Explain Last Output")
+            print("7. Exit")
 
-            choice = input("Select an option (1-6): ").strip()
+            choice = input("Select an option (1-7): ").strip()
 
             if choice == '1':
                 # Reset explanation trace for each new reasoning cycle
@@ -77,12 +78,22 @@ def main():
                 print(explainer.explain(explanation_trace))
 
             elif choice == '2':
+                user_goal = input("Enter your goal: ").strip()
+                questions = clarifier.clarify(user_goal)
+                if questions:
+                    print("\nClarifying questions:")
+                    for q in questions:
+                        print(f"- {q}")
+                else:
+                    print("No clarification needed.")
+
+            elif choice == '3':
                 fact = input("Enter fact name: ").strip()
                 value = input("Enter fact value: ").strip()
                 memory.store(fact, value, source="user")
                 print("Fact stored successfully.")
 
-            elif choice == '3':
+            elif choice == '4':
                 print("Choose document ingestion method:")
                 print("1. Paste manually")
                 print(f"2. Upload from file (in {Config.UPLOAD_DIR})")
@@ -112,19 +123,19 @@ def main():
 
                 print("Document processed and facts stored.")
 
-            elif choice == '4':
+            elif choice == '5':
                 query = input("Enter fact name to query: ").strip()
                 result = memory.retrieve(query)
                 print(f"Fact: {result or '[Not Found]'}")
 
-            elif choice == '5':
+            elif choice == '6':
                 if explanation_trace:
                     print("\n--- Last Explanation ---")
                     print(explainer.explain(explanation_trace))
                 else:
                     print("No previous explanation found.")
 
-            elif choice == '6':
+            elif choice == '7':
                 print("Exiting Zeroth CLI. Goodbye!")
                 break
 
