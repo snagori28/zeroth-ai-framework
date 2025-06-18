@@ -12,6 +12,12 @@ class MemoryAgent:
             auth=(Config.NEO4J_USER, Config.NEO4J_PASSWORD),
         )
 
+    def close(self):
+        """Close the underlying Neo4j driver connection."""
+        logger.info("Shutting down MemoryAgent driver")
+        if self.driver is not None:
+            self.driver.close()
+
     def retrieve(self, query):
         logger.debug("Retrieving fact '%s'", query)
         with self.driver.session() as session:

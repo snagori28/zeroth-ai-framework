@@ -19,6 +19,12 @@ llm = LLM_Agent()
 explainer = ExplainerAgent()
 ingestor = DocumentIngestor(llm, memory)
 
+
+@app.on_event("shutdown")
+def shutdown_event():
+    logger.info("Shutting down MemoryAgent")
+    memory.close()
+
 class TaskRequest(BaseModel):
     goal: str
 
