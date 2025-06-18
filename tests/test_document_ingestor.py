@@ -49,3 +49,16 @@ def test_ingest_parses_and_stores_facts(tmp_path):
     assert dummy_llm.queries == [("content", "factual")]
     assert ("fact1", "value1", "document") in dummy_memory.stored
     assert ("fact2", "value2", "document") in dummy_memory.stored
+
+
+def test_ingest_string_logs_and_stores(caplog):
+    dummy_llm = DummyLLMAgent()
+    dummy_memory = DummyMemoryAgent()
+    ingestor = DocumentIngestor(dummy_llm, dummy_memory)
+
+    with caplog.at_level("INFO"):
+        ingestor.ingest("text content")
+
+    assert dummy_llm.queries == [("text content", "factual")]
+    assert ("fact1", "value1", "document") in dummy_memory.stored
+    assert any("Ingesting" in record.message for record in caplog.records)
