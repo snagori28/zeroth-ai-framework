@@ -92,7 +92,7 @@ base.
 
 ### 🏥 Medical Diagnosis
 - **Use Case**: Diagnose rare symptoms
-- **Input**: Upload journal articles and past patient history
+- **Input**: Upload medical books, articles and past patient history
 - **Outcome**: Logical diagnosis trace and possible treatment paths
 
 ### 🕵️ Criminal Investigation
