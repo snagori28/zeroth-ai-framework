@@ -10,6 +10,7 @@ from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
 from core.feedback_agent import FeedbackAgent
+from core.clarifier_agent import ClarifierAgent
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ planner = PlannerAgent()
 memory = MemoryAgent()
 llm = LLM_Agent()
 feedback = FeedbackAgent(llm)
+clarifier = ClarifierAgent(llm_agent=llm)
 reasoner = ReasonerAgent(llm_agent=llm)
 explainer = ExplainerAgent(llm_agent=llm)
 ingestor = DocumentIngestor(llm, memory, feedback)
@@ -42,6 +44,12 @@ class LearnRequest(BaseModel):
     fact: str
     value: str
 
+class ClarifyRequest(BaseModel):
+    """Request body for goal clarification."""
+
+    goal: str
+    num_questions: int = 3
+
 class IngestRequest(BaseModel):
     """Request body for direct text ingestion."""
 
@@ -58,6 +66,15 @@ def plan(req: TaskRequest):
 
     logger.info("/plan called with goal: %s", req.goal)
     return {"subtasks": planner.plan(req.goal)}
+
+
+@app.post("/clarify")
+def clarify(req: ClarifyRequest):
+    """Return clarifying questions for the given goal."""
+
+    logger.info("/clarify called with goal: %s", req.goal)
+    questions = clarifier.clarify(req.goal, req.num_questions)
+    return {"questions": questions}
 
 @app.post("/reason")
 def reason(req: TaskRequest):
