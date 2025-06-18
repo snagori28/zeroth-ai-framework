@@ -68,7 +68,7 @@ Example trace:
 1. Task: Assess oxygen supply
 2. Memory: Oxygen lasts 14 days
 3. Memory: Trip will take 20 days
-4. Inference: Mission needs resupply
+4. Inference: We will need more oxygen supply for the mission to be safe.
 
 ### Document Ingestor
 Uses the LLM in factual mode to ingest files and extract structured facts.
