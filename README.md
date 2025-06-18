@@ -100,6 +100,7 @@ export NEO4J_URI=bolt://localhost:7687
 export NEO4J_USER=neo4j
 export NEO4J_PASSWORD=your_password
 export OPENAI_API_KEY=your_openai_key
+export UPLOAD_DIR=/path/to/uploads  # optional override for uploaded files
 ```
 
 ---
