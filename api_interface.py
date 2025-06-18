@@ -2,6 +2,7 @@ import os
 import logging
 from fastapi import FastAPI
 from pydantic import BaseModel
+from config import Config
 from core.planner_agent import PlannerAgent
 from core.memory_agent import MemoryAgent
 from core.reasoner_agent import ReasonerAgent
@@ -42,7 +43,7 @@ class IngestRequest(BaseModel):
     content: str
 
 class IngestFileRequest(BaseModel):
-    """Request body for ingesting a file from ``uploads`` directory."""
+    """Request body for ingesting a file from the upload directory."""
 
     filename: str  # Name of a text file located in Config.UPLOAD_DIR
 
@@ -81,9 +82,9 @@ def ingest(req: IngestRequest):
 
 @app.post("/ingest-file")
 def ingest_file(req: IngestFileRequest):
-    """Load a text file from ``uploads`` and ingest its contents."""
+    """Load a text file from the upload directory and ingest its contents."""
 
-    filepath = os.path.join("uploads", req.filename)
+    filepath = os.path.join(Config.UPLOAD_DIR, req.filename)
     logger.info("/ingest-file loading %s", filepath)
     if not os.path.exists(filepath):
         return {"error": "File not found"}
