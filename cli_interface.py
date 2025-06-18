@@ -8,6 +8,8 @@ from core.document_ingestor import DocumentIngestor
 from config import Config
 
 def main():
+    """Launch the interactive command line interface."""
+
     planner = PlannerAgent()
     memory = MemoryAgent()
     reasoner = ReasonerAgent()
