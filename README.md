@@ -120,7 +120,7 @@ Example workflow:
 ### 🧠 Business Strategy & Operations
 - **Use Case**: Evaluate new market entry
 - **Input**: Upload market reports and financial data
-- **Outcome**: Transparent rationale based on GDP, infrastructure, and regulations
+- **Outcome**: Rational decision based on GDP, infrastructure, and regulations
 
 ### 🏥 Medical Diagnosis
 - **Use Case**: Diagnose rare symptoms
