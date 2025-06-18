@@ -7,6 +7,8 @@ from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
 
 def main():
+    """Launch the interactive command line interface."""
+
     planner = PlannerAgent()
     memory = MemoryAgent()
     reasoner = ReasonerAgent()
