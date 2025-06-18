@@ -8,6 +8,7 @@ from core.reasoner_agent import ReasonerAgent
 from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
+from config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,9 @@ reasoner = ReasonerAgent()
 llm = LLM_Agent()
 explainer = ExplainerAgent()
 ingestor = DocumentIngestor(llm, memory)
+
+# Ensure the upload directory exists before any file operations
+os.makedirs(Config.UPLOAD_DIR, exist_ok=True)
 
 class TaskRequest(BaseModel):
     goal: str
@@ -59,7 +63,7 @@ def ingest(req: IngestRequest):
 
 @app.post("/ingest-file")
 def ingest_file(req: IngestFileRequest):
-    filepath = os.path.join("uploads", req.filename)
+    filepath = os.path.join(Config.UPLOAD_DIR, req.filename)
     logger.info("/ingest-file loading %s", filepath)
     if not os.path.exists(filepath):
         return {"error": "File not found"}
