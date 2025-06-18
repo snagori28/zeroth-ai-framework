@@ -18,18 +18,19 @@ def main():
 
     explanation_trace = []
 
-    while True:
-        print("\n=== Zeroth CLI ===")
-        print("1. Plan & Reason a Goal")
-        print("2. Learn a Fact Manually")
-        print("3. Ingest a Document")
-        print("4. Query Memory")
-        print("5. Explain Last Output")
-        print("6. Exit")
+    try:
+        while True:
+            print("\n=== Zeroth CLI ===")
+            print("1. Plan & Reason a Goal")
+            print("2. Learn a Fact Manually")
+            print("3. Ingest a Document")
+            print("4. Query Memory")
+            print("5. Explain Last Output")
+            print("6. Exit")
 
-        choice = input("Select an option (1-6): ").strip()
+            choice = input("Select an option (1-6): ").strip()
 
-        if choice == '1':
+            if choice == '1':
             # Reset explanation trace for each new reasoning cycle
             explanation_trace = []
             user_goal = input("Enter your goal: ").strip()
@@ -53,13 +54,13 @@ def main():
             print("\n--- Explanation Trace ---")
             print(explainer.explain(explanation_trace))
 
-        elif choice == '2':
+            elif choice == '2':
             fact = input("Enter fact name: ").strip()
             value = input("Enter fact value: ").strip()
             memory.store(fact, value, source="user")
             print("Fact stored successfully.")
 
-        elif choice == '3':
+            elif choice == '3':
             print("Choose document ingestion method:")
             print("1. Paste manually")
             print("2. Upload from file (in ./uploads)")
@@ -85,24 +86,27 @@ def main():
 
             print("Document processed and facts stored.")
 
-        elif choice == '4':
+            elif choice == '4':
             query = input("Enter fact name to query: ").strip()
             result = memory.retrieve(query)
             print(f"Fact: {result or '[Not Found]'}")
 
-        elif choice == '5':
+            elif choice == '5':
             if explanation_trace:
                 print("\n--- Last Explanation ---")
                 print(explainer.explain(explanation_trace))
             else:
                 print("No previous explanation found.")
 
-        elif choice == '6':
+            elif choice == '6':
             print("Exiting Zeroth CLI. Goodbye!")
             break
 
-        else:
-            print("Invalid option. Try again.")
+            else:
+                print("Invalid option. Try again.")
+
+    finally:
+        memory.close()
 
 if __name__ == '__main__':
     main()
