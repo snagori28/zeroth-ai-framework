@@ -5,6 +5,7 @@ from core.reasoner_agent import ReasonerAgent
 from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
+from core.feedback_agent import FeedbackAgent
 from config import Config, ensure_env_vars
 
 def main():
@@ -15,10 +16,11 @@ def main():
 
     planner = PlannerAgent()
     memory = MemoryAgent()
-    reasoner = ReasonerAgent()
     llm = LLM_Agent()
-    explainer = ExplainerAgent()
-    ingestor = DocumentIngestor(llm, memory)
+    feedback = FeedbackAgent(llm)
+    reasoner = ReasonerAgent(llm_agent=llm)
+    explainer = ExplainerAgent(llm_agent=llm)
+    ingestor = DocumentIngestor(llm, memory, feedback)
 
     explanation_trace = []
 
@@ -46,8 +48,17 @@ def main():
                     if not fact:
                         llm_response = llm.query(task, mode="factual")
                         print(f"LLM Suggested:\n{llm_response}")
-                        confirm = input("Store this information? (y/n): ").strip().lower()
-                        if confirm == 'y':
+                        suggested = feedback.review(task, llm_response)
+                        print(f"LLM suggests to {suggested} this fact.")
+                        user_choice = input("Accept, edit, or reject? (a/e/r): ").strip().lower()
+                        decision = user_choice[0] if user_choice else suggested[0]
+                        if decision == 'r':
+                            fact = None
+                        elif decision == 'e':
+                            fact, llm_response = feedback.edit(task, llm_response)
+                            memory.store(fact, llm_response, source="llm")
+                            fact = llm_response
+                        else:
                             memory.store(task, llm_response, source="llm")
                             fact = llm_response
                     known_facts.append(fact or "[Unknown Fact]")

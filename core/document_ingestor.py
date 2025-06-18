@@ -1,12 +1,13 @@
 import os
 import logging
+from .feedback_agent import FeedbackAgent
 
 logger = logging.getLogger(__name__)
 
 class DocumentIngestor:
     """Parse documents and store extracted facts using provided agents."""
 
-    def __init__(self, llm_agent, memory_agent):
+    def __init__(self, llm_agent, memory_agent, feedback_agent=None):
         """Create a new ingestor.
 
         Parameters
@@ -19,6 +20,7 @@ class DocumentIngestor:
 
         self.llm_agent = llm_agent
         self.memory_agent = memory_agent
+        self.feedback_agent = feedback_agent or FeedbackAgent(llm_agent)
 
     def ingest(self, content_or_path):
         """Ingest text or a file path and store discovered facts.
@@ -45,9 +47,16 @@ class DocumentIngestor:
         else:
             content = content_or_path
 
-        facts = self.llm_agent.query(content, mode="factual")
+        facts = self.llm_agent.query("Extract structured facts from this document:\n" + content, mode="factual")
         for line in facts.split("\n"):
             if ":" in line:
                 fact, value = line.split(":", 1)
-                logger.debug("Storing fact '%s'", fact.strip())
-                self.memory_agent.store(fact.strip(), value.strip(), source="document")
+                fact = fact.strip()
+                value = value.strip()
+                decision = self.feedback_agent.review(fact, value)
+                logger.debug("Feedback decision for '%s': %s", fact, decision)
+                if decision == "reject":
+                    continue
+                if decision == "edit":
+                    fact, value = self.feedback_agent.edit(fact, value)
+                self.memory_agent.store(fact, value, source="document")

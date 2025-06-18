@@ -13,8 +13,11 @@ class _DummyChatCompletion:
 
 openai_stub.ChatCompletion = _DummyChatCompletion
 openai_stub.api_key = None
-sys.modules.setdefault("openai", openai_stub)
+sys.modules["openai"] = openai_stub
 
+import importlib
+import core.llm_agent as llm_mod
+importlib.reload(llm_mod)
 from core.llm_agent import LLM_Agent
 from config import Config
 import pytest
