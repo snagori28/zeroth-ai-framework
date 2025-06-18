@@ -27,7 +27,7 @@ class IngestRequest(BaseModel):
     content: str
 
 class IngestFileRequest(BaseModel):
-    filename: str  # This should be a text file name present in ./uploads
+    filename: str  # Name of a text file located in Config.UPLOAD_DIR
 
 @app.post("/plan")
 def plan(req: TaskRequest):
