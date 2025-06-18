@@ -20,10 +20,12 @@ Build a lightweight, offline-friendly, explainable AI engine that is developer-f
 - **Explainability**: Clear, human-readable reasoning.
 - **Resource Efficiency**: Run where GPUs can’t.
 ## ⚙️ Key Features
-- Modular agent architecture (Planner, Memory, Reasoner, Explainer, LLM and Ingestor)
+- Modular agent architecture (Planner, Memory, Reasoner, Explainer, Clarifier, Feedback, LLM and Ingestor)
+- LLM-first planning with spaCy fallback
 - Dual LLM modes for factual or creative reasoning
-- Neo4j-backed graph memory
-- Explainable, step-by-step output
+- Graph memory with synonym search and fuzzy matching
+- Document ingestion with fact validation
+- Chain-of-thought reasoning traces
 - Works offline with minimal LLM use
 
 ---
@@ -33,9 +35,10 @@ Build a lightweight, offline-friendly, explainable AI engine that is developer-f
 Example workflow:
 1. Planner breaks a goal like “Plan Mars mission” into subtasks.
 2. Memory checks what’s already known.
-3. Reasoner makes deductions from known facts.
-4. LLM is consulted *only* if something critical is missing.
-5. Explainer compiles a full trace of how it reached the answer.
+3. ClarifierAgent asks follow‑up questions if a subtask is unclear.
+4. Reasoner makes deductions from known facts with chain‑of‑thought prompts.
+5. FeedbackAgent validates any new facts suggested by the LLM.
+6. Explainer compiles a full trace of how Zeroth reached the answer.
 
 ---
 
