@@ -28,7 +28,7 @@ Build a lightweight, offline-friendly, explainable AI engine that is developer-f
 - Chain-of-thought reasoning traces
 - Works offline with minimal LLM use
 
-## ⚙️ Architecture Components and Flow
+## 🧠 Zeroth in Action
 
 ### Planner Agent
 Decomposes high‑level goals into clear subtasks.
@@ -53,12 +53,12 @@ Dual mode:
 
 ### Reasoner Agent
 Combines known facts to form logical inferences—think deductive reasoning.
-Example: input `["Oxygen lasts 14 days", "Trip is 20 days"]` → output
+Example: input `["Oxygen lasts 14 days", "Trip will take 20 days"]` → output
 `Insufficient oxygen for mission`.
 
 ### Feedback Agent
 Validates new facts before they are stored. Example: if the LLM suggests
-`"Water found at crater"`, the agent decides to accept, edit or reject it before
+`"Oxgen can by sythesised on mars"`, the agent decides to accept, edit or reject it before
 adding to memory.
 
 ### Explainer Agent
@@ -67,7 +67,7 @@ Builds transparent reasoning traces.
 Example trace:
 1. Task: Assess oxygen supply
 2. Memory: Oxygen lasts 14 days
-3. Memory: Trip is 20 days
+3. Memory: Trip will take 20 days
 4. Inference: Mission needs resupply
 
 ### Document Ingestor
@@ -80,18 +80,6 @@ asks for missing details, Memory recalls facts, the LLM fills knowledge gaps,
 the Reasoner deduces new insights, the Feedback agent vets new facts, the
 Explainer narrates the steps, and the Document Ingestor expands the knowledge
 base.
-
----
-
-## 🧠 Zeroth in Action
-
-Example workflow:
-1. Planner breaks a goal like “Plan Mars mission” into subtasks.
-2. Memory checks what’s already known.
-3. ClarifierAgent asks follow‑up questions if a subtask is unclear.
-4. Reasoner makes deductions from known facts with chain‑of‑thought prompts.
-5. FeedbackAgent validates any new facts suggested by the LLM.
-6. Explainer compiles a full trace of how Zeroth reached the answer.
 
 ---
 
