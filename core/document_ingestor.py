@@ -4,11 +4,35 @@ import logging
 logger = logging.getLogger(__name__)
 
 class DocumentIngestor:
+    """Parse documents and store extracted facts using provided agents."""
+
     def __init__(self, llm_agent, memory_agent):
+        """Create a new ingestor.
+
+        Parameters
+        ----------
+        llm_agent : LLM_Agent
+            Agent used to convert text into factual statements.
+        memory_agent : MemoryAgent
+            Agent responsible for persisting the extracted facts.
+        """
+
         self.llm_agent = llm_agent
         self.memory_agent = memory_agent
 
     def ingest(self, content_or_path):
+        """Ingest text or a file path and store discovered facts.
+
+        Parameters
+        ----------
+        content_or_path : str
+            Either raw text content or a path to a text file.
+
+        Returns
+        -------
+        None
+        """
+
         logger.info("Ingesting content or path: %s", content_or_path)
         # Check if the input is a path to a file
         if os.path.exists(content_or_path) and os.path.isfile(content_or_path):
