@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from core.planner_agent import PlannerAgent
@@ -25,6 +26,9 @@ class LearnRequest(BaseModel):
 class IngestRequest(BaseModel):
     content: str
 
+class IngestFileRequest(BaseModel):
+    filename: str  # This should be a text file name present in ./uploads
+
 @app.post("/plan")
 def plan(req: TaskRequest):
     return {"subtasks": planner.plan(req.goal)}
@@ -45,6 +49,16 @@ def learn(req: LearnRequest):
 def ingest(req: IngestRequest):
     ingestor.ingest(req.content)
     return {"status": "ingested"}
+
+@app.post("/ingest-file")
+def ingest_file(req: IngestFileRequest):
+    filepath = os.path.join("uploads", req.filename)
+    if not os.path.exists(filepath):
+        return {"error": "File not found"}
+    with open(filepath, "r", encoding="utf-8") as file:
+        content = file.read()
+    ingestor.ingest(content)
+    return {"status": "file ingested", "filename": req.filename}
 
 @app.post("/explain")
 def explain(req: TaskRequest):
