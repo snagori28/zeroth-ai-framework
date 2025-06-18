@@ -6,6 +6,7 @@ from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
 from core.feedback_agent import FeedbackAgent
+from core.clarifier_agent import ClarifierAgent
 from config import Config, ensure_env_vars
 
 def main():
@@ -18,6 +19,7 @@ def main():
     memory = MemoryAgent()
     llm = LLM_Agent()
     feedback = FeedbackAgent(llm)
+    clarifier = ClarifierAgent(llm_agent=llm)
     reasoner = ReasonerAgent(llm_agent=llm)
     explainer = ExplainerAgent(llm_agent=llm)
     ingestor = DocumentIngestor(llm, memory, feedback)
@@ -40,6 +42,11 @@ def main():
                 # Reset explanation trace for each new reasoning cycle
                 explanation_trace = []
                 user_goal = input("Enter your goal: ").strip()
+                follow_ups = clarifier.clarify(user_goal)
+                for q in follow_ups:
+                    ans = input(f"{q} ").strip()
+                    if ans:
+                        user_goal += f"\n{q}: {ans}"
                 subtasks = planner.plan(user_goal)
                 known_facts = []
 
