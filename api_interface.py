@@ -87,10 +87,16 @@ def ingest(req: IngestRequest):
 def ingest_file(req: IngestFileRequest):
     """Load a text file from the upload directory and ingest its contents."""
 
-    filepath = os.path.join(Config.UPLOAD_DIR, req.filename)
+    base_dir = os.path.abspath(Config.UPLOAD_DIR)
+    filepath = os.path.abspath(os.path.join(base_dir, req.filename))
     logger.info("/ingest-file loading %s", filepath)
+
+    if not filepath.startswith(base_dir + os.sep):
+        return {"error": "Invalid filename"}
+
     if not os.path.exists(filepath):
         return {"error": "File not found"}
+
     with open(filepath, "r", encoding="utf-8") as file:
         content = file.read()
     ingestor.ingest(content)

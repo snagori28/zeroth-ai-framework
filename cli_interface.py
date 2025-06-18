@@ -72,7 +72,11 @@ def main():
 
                 if doc_option == '2':
                     filename = input(f"Enter filename (from {Config.UPLOAD_DIR}): ").strip()
-                    filepath = os.path.join(Config.UPLOAD_DIR, filename)
+                    base_dir = os.path.abspath(Config.UPLOAD_DIR)
+                    filepath = os.path.abspath(os.path.join(base_dir, filename))
+                    if not filepath.startswith(base_dir + os.sep):
+                        print("Invalid file path.")
+                        continue
                     if not os.path.exists(filepath):
                         print("File not found.")
                         continue
