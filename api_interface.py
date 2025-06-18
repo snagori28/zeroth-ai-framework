@@ -2,7 +2,7 @@ import os
 import logging
 from fastapi import FastAPI
 from pydantic import BaseModel
-from config import Config
+from config import Config, ensure_env_vars
 from core.planner_agent import PlannerAgent
 from core.memory_agent import MemoryAgent
 from core.reasoner_agent import ReasonerAgent
@@ -11,6 +11,9 @@ from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
 
 logger = logging.getLogger(__name__)
+
+# Prompt for required configuration at startup
+ensure_env_vars()
 
 app = FastAPI()
 planner = PlannerAgent()

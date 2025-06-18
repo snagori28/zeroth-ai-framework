@@ -5,10 +5,13 @@ from core.reasoner_agent import ReasonerAgent
 from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
-from config import Config
+from config import Config, ensure_env_vars
 
 def main():
     """Launch the interactive command line interface."""
+
+    # Ask for any configuration values that are not provided via environment.
+    ensure_env_vars()
 
     planner = PlannerAgent()
     memory = MemoryAgent()
