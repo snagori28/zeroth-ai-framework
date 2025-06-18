@@ -1,11 +1,16 @@
 import openai
 from config import Config
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LLM_Agent:
     def __init__(self):
+        logger.info("Initializing LLM agent")
         openai.api_key = Config.OPENAI_API_KEY
 
     def query(self, goal, mode="factual"):
+        logger.info("Querying LLM with mode '%s'", mode)
         if mode == "factual":
             prompt = f"You are a factual assistant. Provide concise structured facts for the task: '{goal}'. List all relevant facts as bullet points."
             temperature = 0.2
@@ -24,4 +29,5 @@ class LLM_Agent:
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
+            logger.error("LLM query failed: %s", e)
             return f"[LLM ERROR: {e}]"

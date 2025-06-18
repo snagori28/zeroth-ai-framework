@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 
 class Config:
@@ -18,3 +19,9 @@ class Config:
 
     # Security or future config placeholders
     MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", 5))
+
+
+logging.basicConfig(
+    level=Config.LOG_LEVEL,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)

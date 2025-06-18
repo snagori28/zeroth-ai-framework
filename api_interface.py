@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, Request
+import logging
+from fastapi import FastAPI
 from pydantic import BaseModel
 from core.planner_agent import PlannerAgent
 from core.memory_agent import MemoryAgent
@@ -7,6 +8,8 @@ from core.reasoner_agent import ReasonerAgent
 from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 planner = PlannerAgent()
@@ -31,10 +34,12 @@ class IngestFileRequest(BaseModel):
 
 @app.post("/plan")
 def plan(req: TaskRequest):
+    logger.info("/plan called with goal: %s", req.goal)
     return {"subtasks": planner.plan(req.goal)}
 
 @app.post("/reason")
 def reason(req: TaskRequest):
+    logger.info("/reason called with goal: %s", req.goal)
     subtasks = planner.plan(req.goal)
     known_facts = [memory.retrieve(task) or "[Unknown Fact]" for task in subtasks]
     result = reasoner.reason(known_facts)
@@ -42,17 +47,20 @@ def reason(req: TaskRequest):
 
 @app.post("/learn")
 def learn(req: LearnRequest):
+    logger.info("/learn storing fact '%s'", req.fact)
     memory.store(req.fact, req.value, source="user")
     return {"status": "stored", "fact": req.fact}
 
 @app.post("/ingest")
 def ingest(req: IngestRequest):
+    logger.info("/ingest called")
     ingestor.ingest(req.content)
     return {"status": "ingested"}
 
 @app.post("/ingest-file")
 def ingest_file(req: IngestFileRequest):
     filepath = os.path.join("uploads", req.filename)
+    logger.info("/ingest-file loading %s", filepath)
     if not os.path.exists(filepath):
         return {"error": "File not found"}
     with open(filepath, "r", encoding="utf-8") as file:
@@ -62,6 +70,7 @@ def ingest_file(req: IngestFileRequest):
 
 @app.post("/explain")
 def explain(req: TaskRequest):
+    logger.info("/explain called with goal: %s", req.goal)
     subtasks = planner.plan(req.goal)
     known_facts = [memory.retrieve(task) or "[Unknown Fact]" for task in subtasks]
     reasoning = reasoner.reason(known_facts)
