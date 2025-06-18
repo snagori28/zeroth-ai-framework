@@ -15,9 +15,20 @@ class _DummyGraphDatabase:
 neo4j_stub.GraphDatabase = _DummyGraphDatabase
 sys.modules.setdefault("neo4j", neo4j_stub)
 
+# minimal openai stub so imports work
+openai_stub = types.ModuleType("openai")
+class _DummyChat:
+    @staticmethod
+    def create(*a, **k):
+        raise NotImplementedError
+openai_stub.ChatCompletion = _DummyChat
+openai_stub.api_key = None
+sys.modules["openai"] = openai_stub
+
 from core.planner_agent import PlannerAgent
 from core.reasoner_agent import ReasonerAgent
 from core.explainer_agent import ExplainerAgent
+from core.llm_agent import LLM_Agent
 from core.memory_agent import MemoryAgent
 
 import pytest
@@ -69,16 +80,19 @@ def test_planner_plan_returns_list():
     assert isinstance(result, list)
 
 
-def test_reasoner_concatenates_facts():
-    agent = ReasonerAgent()
+def test_reasoner_uses_llm(monkeypatch):
+    dummy = types.SimpleNamespace()
+    monkeypatch.setattr(LLM_Agent, "query", lambda self, prompt, mode="factual": "result")
+    agent = ReasonerAgent(llm_agent=LLM_Agent())
     facts = ["fact1", "fact2"]
-    assert agent.reason(facts) == "Based on facts: fact1; fact2"
+    assert agent.reason(facts) == "result"
 
 
-def test_explainer_formats_steps():
-    agent = ExplainerAgent()
+def test_explainer_formats_steps(monkeypatch):
+    monkeypatch.setattr(LLM_Agent, "query", lambda self, prompt, mode="creative": "explain")
+    agent = ExplainerAgent(llm_agent=LLM_Agent())
     steps = ["step one", "step two"]
-    assert agent.explain(steps) == "1. step one\n2. step two"
+    assert agent.explain(steps) == "explain"
 
 
 # Test for MemoryAgent using mocked Neo4j driver
@@ -86,8 +100,9 @@ def test_explainer_formats_steps():
 def test_memory_agent_store_and_retrieve(monkeypatch):
     dummy_driver = DummyDriver()
     monkeypatch.setattr("core.memory_agent.GraphDatabase.driver", lambda *a, **kw: dummy_driver)
+    monkeypatch.setattr(LLM_Agent, "query", lambda self, prompt, mode="factual": "")
 
-    memory = MemoryAgent()
+    memory = MemoryAgent(llm_agent=LLM_Agent())
     memory.store("fact", "value")
 
     assert dummy_driver.store["fact"] == "value"

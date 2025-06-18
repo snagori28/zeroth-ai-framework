@@ -1,6 +1,6 @@
 import os
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from config import Config, ensure_env_vars
 from core.planner_agent import PlannerAgent
@@ -9,6 +9,7 @@ from core.reasoner_agent import ReasonerAgent
 from core.llm_agent import LLM_Agent
 from core.explainer_agent import ExplainerAgent
 from core.document_ingestor import DocumentIngestor
+from core.feedback_agent import FeedbackAgent
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +19,11 @@ ensure_env_vars()
 app = FastAPI()
 planner = PlannerAgent()
 memory = MemoryAgent()
-reasoner = ReasonerAgent()
 llm = LLM_Agent()
-explainer = ExplainerAgent()
-ingestor = DocumentIngestor(llm, memory)
+feedback = FeedbackAgent(llm)
+reasoner = ReasonerAgent(llm_agent=llm)
+explainer = ExplainerAgent(llm_agent=llm)
+ingestor = DocumentIngestor(llm, memory, feedback)
 
 
 @app.on_event("shutdown")
@@ -92,10 +94,10 @@ def ingest_file(req: IngestFileRequest):
     logger.info("/ingest-file loading %s", filepath)
 
     if not filepath.startswith(base_dir + os.sep):
-        return {"error": "Invalid filename"}
+        raise HTTPException(status_code=400, detail="Invalid filename")
 
     if not os.path.exists(filepath):
-        return {"error": "File not found"}
+        raise HTTPException(status_code=404, detail="File not found")
 
     with open(filepath, "r", encoding="utf-8") as file:
         content = file.read()
