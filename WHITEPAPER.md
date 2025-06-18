@@ -28,6 +28,59 @@ Build a lightweight, offline-friendly, explainable AI engine that is developer-f
 - Chain-of-thought reasoning traces
 - Works offline with minimal LLM use
 
+## ⚙️ Architecture Components and Flow
+
+### Planner Agent
+Decomposes high‑level goals into clear subtasks.
+*Real-life analogy*: like a mission commander breaking “Plan Mars Mission” into
+`["Check life support", "Assess gravity", "Find food sources"]`.
+
+### Clarifier Agent
+Poses short follow-up questions when a subtask is vague.
+Example: for "Check life support" it might ask "How many crew members are on board?" to clarify the requirement.
+
+### Memory Agent (Neo4j)
+Persistent, queryable knowledge graph that stores and retrieves structured
+facts. Acts as long‑term memory.
+Example stored fact: `life_support → "Oxygen tanks last 14 days"`.
+
+### LLM Agent
+Used only when the memory has a gap.
+Dual mode:
+- **Factual** – extract concise, bulleted facts. Example prompt: "Give bullet
+  points for how gravity affects muscle loss".
+- **Creative** – freeform generative output when more narrative is required.
+
+### Reasoner Agent
+Combines known facts to form logical inferences—think deductive reasoning.
+Example: input `["Oxygen lasts 14 days", "Trip is 20 days"]` → output
+`Insufficient oxygen for mission`.
+
+### Feedback Agent
+Validates new facts before they are stored. Example: if the LLM suggests
+`"Water found at crater"`, the agent decides to accept, edit or reject it before
+adding to memory.
+
+### Explainer Agent
+Builds transparent reasoning traces.
+
+Example trace:
+1. Task: Assess oxygen supply
+2. Memory: Oxygen lasts 14 days
+3. Memory: Trip is 20 days
+4. Inference: Mission needs resupply
+
+### Document Ingestor
+Uses the LLM in factual mode to ingest files and extract structured facts.
+Example: uploading a Martian soil PDF yields
+`{"Soil Type": "Basaltic", "Water Content": "2%"}`.
+
+Together these agents form a loop: the Planner sets subtasks, the Clarifier
+asks for missing details, Memory recalls facts, the LLM fills knowledge gaps,
+the Reasoner deduces new insights, the Feedback agent vets new facts, the
+Explainer narrates the steps, and the Document Ingestor expands the knowledge
+base.
+
 ---
 
 ## 🧠 Zeroth in Action
