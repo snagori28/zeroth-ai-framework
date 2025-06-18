@@ -28,6 +28,8 @@ def main():
         choice = input("Select an option (1-6): ").strip()
 
         if choice == '1':
+            # Reset explanation trace for each new reasoning cycle
+            explanation_trace = []
             user_goal = input("Enter your goal: ").strip()
             subtasks = planner.plan(user_goal)
             known_facts = []
